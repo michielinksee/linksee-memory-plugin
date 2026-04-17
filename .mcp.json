@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "linksee": {
+      "command": "npx",
+      "args": ["-y", "linksee-memory"]
+    }
+  }
+}

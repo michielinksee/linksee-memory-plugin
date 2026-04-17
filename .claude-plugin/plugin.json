@@ -1,0 +1,21 @@
+{
+  "name": "linksee-memory",
+  "description": "Cross-agent memory with 6-layer WHY structure (goal/context/emotion/impl/caveat/learning) + AST-aware file diff cache. Local-first, private, cross-agent (Claude Code / Cursor / ChatGPT Desktop). Auto-invokes recall/remember/read_smart based on user intent — solves 'every session starts from zero' problem.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Synapse Arrows PTE. LTD.",
+    "url": "https://github.com/michielinksee"
+  },
+  "homepage": "https://github.com/michielinksee/linksee-memory-plugin",
+  "repository": "https://github.com/michielinksee/linksee-memory-plugin",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "memory",
+    "agent-memory",
+    "cross-agent",
+    "local-first",
+    "token-savings",
+    "linksee"
+  ]
+}
