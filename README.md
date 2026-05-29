@@ -1,10 +1,10 @@
 # linksee-memory (Claude Code Plugin)
 
-> The cross-agent brain Claude Code doesn't have. 6-layer structured memory (goal/context/emotion/impl/caveat/learning) + AST-aware file diff cache. **Local-first, private, single SQLite file.**
+> Cross-agent precision memory — 3 tools, 6-layer WHY structure, AST diff cache. **Local-first, private, single SQLite file.**
 
 This is the Claude Code Plugin bundle. It ships:
 
-- **MCP server** (`linksee-memory`) — 6 tools: `remember` / `recall` / `recall_file` / `read_smart` / `forget` / `consolidate`
+- **MCP server** (`linksee-memory`) — 3 tools: `remember` / `recall` / `read_smart`
 - **Skill** (`cross-session-memory`) — auto-invokes memory operations based on user intent
 
 ## The problem this solves
@@ -15,81 +15,80 @@ Mem0 / Letta / Zep try to fix this with flat fact lists — but the agent sees "
 
 ## Install
 
-Once listed in the official marketplace:
-
 ```bash
-/plugin install linksee-memory
+claude plugin add -- linksee-memory
 ```
 
-### Or install locally for testing
+Or add `Use Linksee Memory` to your system prompt for any MCP-compatible agent.
+
+### Local testing
 
 ```bash
 git clone https://github.com/michielinksee/linksee-memory-plugin.git
 claude --plugin-dir ./linksee-memory-plugin
 ```
 
-## What it does
+## 3 tools (v0.7.0)
+
+| Tool | What it does |
+|---|---|
+| `remember` | Save / update / delete memories. Auto-classifies into 6 layers. |
+| `recall` | Search memories, get file edit history, or list entities. |
+| `read_smart` | Token-saving file reader with AST diff caching (50-99% savings). |
+
+Previous versions exposed 8 tools — v0.7.0 unified them into 3 for cross-LLM consistency. The server handles routing internally.
+
+## Auto-triggers
 
 After install, Claude Code auto-triggers memory operations on phrases like:
 
-- "前にこの問題どう解決したっけ" / "how did I solve this before?"
-- "また同じエラーだ" / "same error again"
-- "覚えておいて: …" / "remember this: …"
-- New task start, file edits, decision moments
-
-The agent calls `recall` / `remember` / `read_smart` automatically. Cross-agent memory means **the same brain works across Claude Code, Cursor, ChatGPT Desktop** — one SQLite file at `~/.linksee-memory/memory.db`.
+- "Use Linksee Memory" (system prompt incantation)
+- "how did I solve this before?" / "前にこの問題どう解決したっけ"
+- "same error again" / "また同じエラーだ"
+- "remember this: ..." / "覚えておいて: ..."
+- New task start, file edits, decision moments, errors
 
 ## Three pillars
 
 1. **Token savings** via `read_smart` — sha256 + AST/heading/indent chunking. Re-reads return only diffs. **86% saved on a typical TS file edit, 99% on unchanged re-reads.**
 2. **Cross-agent portability** — one SQLite file, not a cloud service. Same brain for every MCP-speaking agent.
-3. **WHY-first structured memory** — 6 layers: goal / context / emotion / implementation / caveat / learning. The `caveat` layer (pain lessons) is auto-protected from forgetting. Active goals bypass decay.
+3. **WHY-first structured memory** — 6 layers: goal / context / emotion / implementation / caveat / learning. The `caveat` layer (pain lessons) is auto-protected from forgetting.
 
 ## Comparison
 
-| | Mem0 / Letta / Zep | Claude Code auto-memory | **linksee-memory** |
+| | Mem0 / Letta / Zep | Claude built-in memory | **linksee-memory** |
 |---|---|---|---|
-| Cross-agent | △ (cloud) | ❌ Claude only | ✅ single file |
-| 6-layer WHY structure | ❌ flat | ❌ flat md | ✅ |
-| File diff cache (AST) | ❌ | ❌ | ✅ 50-99% token savings |
-| Per-edit user-intent linkage | ❌ | ❌ | ✅ unique |
-| Active forgetting (Ebbinghaus) | △ | ❌ | ✅ caveat protected |
-| Local-first / private | ❌ | ✅ | ✅ |
+| Cross-agent | cloud-dependent | Claude only | single local file |
+| 6-layer WHY structure | flat | flat md | goal/context/emotion/impl/caveat/learning |
+| File diff cache (AST) | no | no | 50-99% token savings |
+| Per-edit user-intent | no | no | unique |
+| Ebbinghaus forgetting | partial | no | caveat protected |
+| Local-first / private | no | yes | yes |
 
 ## Inside this plugin
 
 ```
 linksee-memory-plugin/
-├── .claude-plugin/
-│   └── plugin.json                 # plugin manifest
-├── .mcp.json                       # launches linksee-memory via npx
-├── skills/
-│   └── cross-session-memory/
-│       └── SKILL.md                # auto-invocation rules
-└── README.md                       # this file
+  .claude-plugin/
+    plugin.json                 # plugin manifest
+  .mcp.json                    # launches linksee-memory via npx
+  skills/
+    cross-session-memory/
+      SKILL.md                 # auto-invocation rules
+  README.md
 ```
-
-## Pricing
-
-**Free forever.** Local-first, no hosted component, no account, no API key. Runs entirely on your machine.
 
 ## Privacy
 
-- **Local-first**: SQLite DB at `~/.linksee-memory/memory.db`. Nothing leaves your machine by default.
-- **Opt-in telemetry only**: anonymous usage counts can be enabled with `LINKSEE_TELEMETRY=basic`. **No conversation content, file content, entity names, or project paths are ever sent.**
-- Full privacy contract: [github.com/michielinksee/linksee-memory#telemetry-opt-in-off-by-default](https://github.com/michielinksee/linksee-memory#telemetry-opt-in-off-by-default)
+- **Local-first**: SQLite DB at `~/.linksee-memory/memory.db`. Nothing leaves your machine.
+- **Opt-in telemetry only**: anonymous usage counts can be enabled with `LINKSEE_TELEMETRY=basic`. No content is ever sent.
+- Full privacy contract: [linksee-memory#telemetry](https://github.com/michielinksee/linksee-memory#telemetry-opt-in-off-by-default)
 
 ## Related
 
-- **Core MCP server** (standalone): [npm: linksee-memory](https://www.npmjs.com/package/linksee-memory)
-- **Skill repo** (standalone): [github.com/michielinksee/kansei-linksee-skills](https://github.com/michielinksee/kansei-linksee-skills)
+- **Core MCP server**: [npm: linksee-memory](https://www.npmjs.com/package/linksee-memory)
+- **Docs**: [docs.linksee.app](https://docs.linksee.app)
 - **Pair with**: [kansei-link plugin](https://github.com/michielinksee/kansei-link-plugin) — external SaaS discovery to pair with your personal memory
-
-## Support
-
-- **Issues**: [github.com/michielinksee/linksee-memory-plugin/issues](https://github.com/michielinksee/linksee-memory-plugin/issues)
-- **MCP server issues**: [github.com/michielinksee/linksee-memory/issues](https://github.com/michielinksee/linksee-memory/issues)
-- **Company**: Synapse Arrows PTE. LTD. (Singapore)
 
 ## License
 
