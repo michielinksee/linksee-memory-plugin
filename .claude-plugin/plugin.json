@@ -1,7 +1,7 @@
 {
   "name": "linksee-memory",
-  "description": "Cross-agent precision memory — 3 tools (remember/recall/read_smart) with 6-layer WHY structure + AST diff cache. Local-first, private, works across Claude/GPT/Cursor/Codex/Gemini. Add 'Use Linksee Memory' to your prompt for auto-invocation.",
-  "version": "0.7.0",
+  "description": "Cross-agent memory + drift detection — 7 tools (remember/recall/read_smart + drift_status/check_decision/declare_anchor/resolve_drift). 6-layer WHY structure, AST diff cache, 4-species decision tracking. Local-first, private, works across Claude/GPT/Cursor/Codex/Gemini.",
+  "version": "0.8.0",
   "author": {
     "name": "Synapse Arrows PTE. LTD.",
     "url": "https://github.com/michielinksee"
@@ -16,6 +16,8 @@
     "cross-agent",
     "local-first",
     "token-savings",
+    "drift-detection",
+    "decision-tracking",
     "linksee"
   ]
 }
