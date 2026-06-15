@@ -2,12 +2,12 @@
 name: linksee-memory
 description: |
   The bridge to the agent's "past self" AND the integrity checker for product decisions.
-  7 MCP tools: remember/recall/read_smart (memory) + drift_status/check_decision/declare_anchor/resolve_drift (drift detection).
+  11 MCP tools: remember/recall/read_smart (memory) + drift_status/check_decision/declare_anchor/resolve_drift/flag_proposals/resolve_proposal/dream (drift) + where_am_i (a product map that catches doc/code drift with file:line evidence).
   This is the only way to solve Claude Code's "memory amnesia every session" problem AND catch when reality silently diverges from decisions.
 
   ALWAYS use this skill at the following moments:
   1. Task start / new task begins — recall past caveats, decisions, learnings
-  2. Before editing a file — check file edit history via recall
+  2. Before editing a file — check file edit history via recall, and where_am_i to see what that file promised
   3. The moment an error/failure happens — remember as caveat
   4. The moment something succeeds or is learned — remember as learning
   5. When the user says "before", "earlier", "last time", "remember?", "remember this"
@@ -16,27 +16,28 @@ description: |
   8. When asked about product health / what's drifting / what needs attention — drift_status
   9. When a decision is made — declare_anchor
   10. When drift is identified or resolved — resolve_drift
+  11. When opening or switching files / "where am I" / "what does this affect" — where_am_i (locate in the product map, see promises, reality, and blast radius)
 
-  Triggers (EN): remember/recall/forget/memory/before/earlier/last time/previously/remember when/same as before/history/use linksee/linksee/drift/drifting/what's broken/decision/anchor/decided
-  Triggers (JP): 記憶/覚えて/忘れて/過去/前回/前に/そういえば/覚えてる/リンクシー/ドリフト/方針/決定/アンカー
+  Triggers (EN): remember/recall/forget/memory/before/earlier/last time/previously/remember when/same as before/history/use linksee/linksee/drift/drifting/what's broken/decision/anchor/decided/where am I/product map/what does this affect/blast radius
+  Triggers (JP): 記憶/覚えて/忘れて/過去/前回/前に/そういえば/覚えてる/リンクシー/ドリフト/方針/決定/アンカー/今どこ/地図/何に影響
   Error keywords: failed/broken/stuck/error/bug/doesn't work/not working/same error again
   Decision keywords: decided/let's go with/approved/settled on/pivot/strategy/switch to/anchor this
 ---
 
-# Linksee Memory — 7 Tools, Cross-Agent Brain + Drift Detection
+# Linksee Memory — 11 Tools, Cross-Agent Brain + Product Map + Drift Detection
 
 ## Core Principle
 
 **This skill bridges two gaps no other tool fills:**
 
 1. **Memory gap**: Claude Code forgets everything when a session ends. linksee-memory is the "memory that doesn't disappear" device.
-2. **Drift gap**: Decisions get made but nothing checks if reality still matches. The drift detector catches silent divergence.
+2. **Drift gap**: Decisions get made but nothing checks if reality still matches. A product map (map.yaml, git source of truth) reconciles your README, docs, and code, and the drift detector catches silent divergence — with file:line evidence.
 
-Writes are handled automatically by the Stop hook. **Reads and drift checks require the agent to actively pull** — this skill instills that habit.
+Writes are handled automatically by the Stop hook. **Reads, map lookups, and drift checks require the agent to actively pull** — this skill instills that habit.
 
 ---
 
-## The 7 Tools
+## The 11 Tools
 
 ### Memory tools (cross-agent brain)
 
@@ -46,14 +47,23 @@ Writes are handled automatically by the Stop hook. **Reads and drift checks requ
 | `recall` | 3 modes: search (query), file history (path), entity overview (no params). CALL BEFORE every new task. |
 | `read_smart` | Token-saving file reads. Use INSTEAD of Read for all files. 50-99% savings on re-reads. |
 
+### Map tool (where am I in the product)
+
+| Tool | When to use |
+|---|---|
+| `where_am_i` | Locate the current file in the product map. Four questions: where am I, what did this file promise, what does the code actually do, what else must change with it (graded blast radius). Call when opening or switching files. |
+
 ### Drift tools (decision integrity)
 
 | Tool | When to use |
 |---|---|
-| `drift_status` | "What needs my attention?" — truth map with drift/review/held/aligned states. Call at session start. |
+| `drift_status` | "What needs my attention?" — truth map with drift/review/held/aligned states, reconciled against the product map. Call at session start. |
 | `check_decision` | Deep-dive into one anchor — premises, edges, candidates. Call before resolving. |
 | `declare_anchor` | User makes a decision/constraint/prohibition → declare it. declare-don't-mine: only explicit human declaration. |
 | `resolve_drift` | Close the loop: fix / supersede / acknowledge / dismiss. |
+| `flag_proposals` | Surface proposed anchors/drifts awaiting your decision. |
+| `resolve_proposal` | Accept or reject a proposed anchor/drift. |
+| `dream` | Background consolidation — synthesize learnings and surface latent drift. |
 
 ---
 
@@ -90,10 +100,11 @@ recall({ query: "<task keywords>", max_tokens: 2000 })
 drift_status()  // optional: check what's drifting
 ```
 
-### 2. Before editing a file
+### 2. Before editing a file — history + map
 
 ```
-recall({ path: "server.ts" })  // file edit history with user-intent
+recall({ path: "server.ts" })   // file edit history with user-intent
+where_am_i({ path: "server.ts" }) // what this file promised + blast radius
 ```
 
 ### 3. Reading files — always use read_smart
@@ -142,7 +153,7 @@ resolve_drift({
 
 ### Do
 1. At any new task start, always call `recall` first
-2. Before touching a file, verify history via `recall({ path: ... })`
+2. Before touching a file, verify history via `recall({ path: ... })` and `where_am_i({ path: ... })`
 3. Prefer `read_smart` over `Read` for all files
 4. When an error occurs, record a `caveat` immediately
 5. When a decision is made, consider `declare_anchor`
@@ -166,7 +177,7 @@ resolve_drift({
 
 ---
 
-*This skill runs on top of linksee-memory MCP v0.8.0+.*
-*Auto-write via Stop hook, explicit read via recall, drift via 4 dedicated tools.*
+*This skill runs on top of linksee-memory MCP v0.11.0+.*
+*Auto-write via Stop hook, explicit read via recall, map via where_am_i, drift via dedicated tools.*
 *Listed in MCP Official Registry, PulseMCP, mcpservers.org, Glama.*
 *MIT License — Synapse Arrows PTE. LTD.*
