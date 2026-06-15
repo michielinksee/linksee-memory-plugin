@@ -1,7 +1,7 @@
 {
   "name": "linksee-memory",
-  "description": "Cross-agent memory + drift detection — 7 tools (remember/recall/read_smart + drift_status/check_decision/declare_anchor/resolve_drift). 6-layer WHY structure, AST diff cache, 4-species decision tracking. Local-first, private, works across Claude/GPT/Cursor/Codex/Gemini.",
-  "version": "0.8.0",
+  "description": "Cross-agent memory tied to a product map that catches doc/code drift — 11 tools (remember/recall/read_smart + drift_status/check_decision/declare_anchor/resolve_drift/flag_proposals/resolve_proposal/dream + where_am_i). 6-layer WHY structure, AST diff cache, file:line drift evidence. Local-first, private, works across Claude/GPT/Cursor/Codex/Gemini.",
+  "version": "0.11.0",
   "author": {
     "name": "Synapse Arrows PTE. LTD.",
     "url": "https://github.com/michielinksee"
@@ -12,6 +12,7 @@
   "keywords": [
     "mcp",
     "memory",
+    "product-map",
     "agent-memory",
     "cross-agent",
     "local-first",
